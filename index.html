@@ -26,8 +26,8 @@
     // Fill these with your project values
     const SUPABASE_URL = (new URL(location.href)).searchParams.get("url") || "https://rcorxfmfomcjyfyllxfx.supabase.co"; // e.g. https://rcorxfmfomcjyfyllxfx.supabase.co
     const SUPABASE_ANON_KEY = (new URL(location.href)).searchParams.get("key") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjb3J4Zm1mb21janlmeWxseGZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NTU2ODEsImV4cCI6MjA3MDMzMTY4MX0.ULqfW4yfb-4QfUPoqoCxnPy0yQnW5UhQu9dnEj-8vAk"; // e.g. your anon key
-    const ARTIST_NAME = (new URL(location.href)).searchParams.get("artist") || "Kanye West - Ye - The Waverunners Collective";
-    const ARTIST_AVATAR = (new URL(location.href)).searchParams.get("avatar") || "https://static.wikia.nocookie.net/kanyewest/images/8/89/Waves_cover.gif/revision/latest?cb=20240819015645";
+    const ARTIST_NAME = (new URL(location.href)).searchParams.get("artist") || "The Waverunners Collective";
+    const ARTIST_AVATAR = (new URL(location.href)).searchParams.get("avatar") || "https://i.redd.it/5vwpz1s1nbd51.jpg";
     const ARTIST_HERO   = (new URL(location.href)).searchParams.get("hero")   || "https://i.imgur.com/JOdSmu6.png";
 
     const sb = (SUPABASE_URL && SUPABASE_ANON_KEY) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
