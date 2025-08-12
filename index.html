@@ -24,11 +24,11 @@
   <script>
     // ==== CONFIG ====
     // Fill these with your project values
-    const SUPABASE_URL = (new URL(location.href)).searchParams.get("url") || ""; // e.g. https://rcorxfmfomcjyfyllxfx.supabase.co
-    const SUPABASE_ANON_KEY = (new URL(location.href)).searchParams.get("key") || ""; // e.g. your anon key
-    const ARTIST_NAME = (new URL(location.href)).searchParams.get("artist") || "Artist";
-    const ARTIST_AVATAR = (new URL(location.href)).searchParams.get("avatar") || "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=256&auto=format&fit=crop&crop=faces";
-    const ARTIST_HERO   = (new URL(location.href)).searchParams.get("hero")   || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1600&q=60";
+    const SUPABASE_URL = (new URL(location.href)).searchParams.get("url") || "https://rcorxfmfomcjyfyllxfx.supabase.co"; // e.g. https://rcorxfmfomcjyfyllxfx.supabase.co
+    const SUPABASE_ANON_KEY = (new URL(location.href)).searchParams.get("key") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjb3J4Zm1mb21janlmeWxseGZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NTU2ODEsImV4cCI6MjA3MDMzMTY4MX0.ULqfW4yfb-4QfUPoqoCxnPy0yQnW5UhQu9dnEj-8vAk"; // e.g. your anon key
+    const ARTIST_NAME = (new URL(location.href)).searchParams.get("artist") || "Kanye West - Ye - The Waverunners Collective";
+    const ARTIST_AVATAR = (new URL(location.href)).searchParams.get("avatar") || "https://static.wikia.nocookie.net/kanyewest/images/8/89/Waves_cover.gif/revision/latest?cb=20240819015645";
+    const ARTIST_HERO   = (new URL(location.href)).searchParams.get("hero")   || "https://i.imgur.com/JOdSmu6.png";
 
     const sb = (SUPABASE_URL && SUPABASE_ANON_KEY) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -211,7 +211,7 @@
       const avatar = el("img", "rounded-full shadow-md", []);
       avatar.src = ARTIST_AVATAR; avatar.alt = ARTIST_NAME; avatar.style.width="160px"; avatar.style.height="160px"; avatar.style.objectFit="cover";
       const meta = el("div", "flex-1");
-      meta.appendChild(el("div", "text-sm text-white/80 mb-1", "Verified Artist"));
+      meta.appendChild(el("div", "text-sm text-white/80 mb-1", "OFFICIAL COLLECTIVE PAGE"));
       meta.appendChild(el("h1", "text-5xl md:text-7xl font-extrabold tracking-tight drop-shadow-lg", ARTIST_NAME));
       const buttons = el("div", "mt-4 flex items-center gap-3");
       const playBtn = el("button", "js-play-toggle bg-green-500 hover:bg-green-400 text-black font-semibold rounded-full px-6 py-2 flex items-center gap-2 shadow-xl no-select");
