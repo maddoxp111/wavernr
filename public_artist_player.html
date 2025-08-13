@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>The Waverunners Collective — Player</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .line-clamp-1 { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .hover-card:hover { transform: translateY(-2px); }
+    .scrollbar-thin::-webkit-scrollbar { height:6px; width:6px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 8px; }
+    @media (max-width: 768px) { .grid-albums { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+    @media (min-width: 769px) { .grid-albums { grid-template-columns: repeat(5,minmax(0,1fr)); } }
+  </style>
+</head>
+<body class="bg-neutral-950 text-white min-h-screen">
+  <div class="relative">
+    <img src="https://i.imgur.com/JOdSmu6.png" class="w-full h-64 md:h-80 object-cover opacity-60" alt="Hero">
+    <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-neutral-950"></div>
+    <div class="absolute bottom-4 left-4 md:left-8 flex items-center gap-4">
+      <img src="https://i.redd.it/5vwpz1s1nbd51.jpg" class="w-16 h-16 md:w-24 md:h-24 rounded-full shadow-lg object-cover" alt="Logo">
+      <div>
+        <div class="uppercase text-xs text-white/70">Artist</div>
+        <h1 class="text-2xl md:text-5xl font-black">The Waverunners Collective</h1>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 md:px-8 py-6">
+    <section id="popular" class="mb-10">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl md:text-2xl font-bold">Popular</h2>
+        <button id="queue-toggle" class="text-sm px-3 py-2 rounded bg-white/10 hover:bg-white/20">Queue</button>
+      </div>
+      <div id="popular-list" class="space-y-2"></div>
+    </section>
+
+    <section id="albums">
+      <h2 class="text-xl md:text-2xl font-bold mb-3">Albums</h2>
+      <div id="album-grid" class="grid grid-albums gap-4"></div>
+    </section>
+  </main>
+
+  <aside id="queue" class="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-neutral-900/95 backdrop-blur border-l border-white/10 translate-x-full transition-transform">
+    <div class="p-4 flex items-center justify-between border-b border-white/10">
+      <div class="font-semibold">Queue</div>
+      <button id="queue-close" class="p-2 rounded-full bg-white/10 hover:bg-white/20">✕</button>
+    </div>
+    <div id="queue-items" class="p-3 space-y-2 overflow-y-auto h-[calc(100%-180px)]"></div>
+    <div class="p-3 border-t border-white/10">
+      <div class="flex items-center justify-between gap-2">
+        <button id="shuffle-btn" class="px-3 py-2 rounded bg-white/10 hover:bg-white/20">Shuffle</button>
+        <button id="repeat-btn" class="px-3 py-2 rounded bg-white/10 hover:bg-white/20">Repeat: Off</button>
+        <button id="clear-queue" class="px-3 py-2 rounded bg-white/10 hover:bg-white/20">Clear</button>
+      </div>
+    </div>
+  </aside>
+
+  <footer class="fixed bottom-0 left-0 right-0 bg-neutral-900/95 backdrop-blur border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-3 md:px-6 py-2">
+      <div class="grid grid-cols-3 items-center gap-2 md:gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <img id="player-cover" src="https://i.redd.it/5vwpz1s1nbd51.jpg" class="w-12 h-12 rounded object-cover border border-white/10" alt="Cover">
+          <div class="min-w-0">
+            <div id="player-title" class="line-clamp-1 font-semibold">—</div>
+            <div id="player-sub" class="text-xs text-white/70 line-clamp-1">The Waverunners Collective</div>
+          </div>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="flex items-center gap-2">
+            <button id="prev-btn" class="p-2 rounded-full bg-white/10 hover:bg-white/20">⏮</button>
+            <button id="rewind-btn" class="p-2 rounded-full bg-white/10 hover:bg-white/20">⏪</button>
+            <button id="play-btn" class="p-2 rounded-full bg-white/10 hover:bg-white/20">▶️</button>
+            <button id="ff-btn" class="p-2 rounded-full bg-white/10 hover:bg-white/20">⏩</button>
+            <button id="next-btn" class="p-2 rounded-full bg-white/10 hover:bg-white/20">⏭</button>
+          </div>
+          <div class="flex items-center gap-2 w-full mt-1">
+            <div id="cur" class="text-xs w-10 text-right">0:00</div>
+            <input id="seek" type="range" min="0" max="100" value="0" class="w-full">
+            <div id="dur" class="text-xs w-10">0:00</div>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center justify-end gap-2">
+          <span class="text-xs text-white/70">Vol</span>
+          <input id="vol" type="range" min="0" max="1" step="0.01" value="1" class="w-28">
+        </div>
+      </div>
+    </div>
+    <audio id="audio" preload="metadata"></audio>
+  </footer>
+
+  <script type="module">
+    import {{ createClient }} from "https://esm.sh/@supabase/supabase-js@2";
+    const supabase = createClient("https://rcorxfmfomcjyfyllxfx.supabase.co", "{ANON_KEY}");
+    const ARTIST_NAME = "The Waverunners Collective";
+    const DEFAULT_COVER = "https://i.redd.it/5vwpz1s1nbd51.jpg";
+
+    let albums = [];
+    let tracks = [];
+    let queue = [];
+    let queueIndex = -1;
+    let isRepeat = 0;
+    let isShuffled = false;
+
+    const $ = (s)=>document.querySelector(s);
+    const fmt = (sec)=>{{ sec=Math.max(0,Math.floor(sec||0)); const m=Math.floor(sec/60), r=sec%60; return m + ":" + String(r).padStart(2,"0"); }};
+
+    const audio = $("#audio");
+    const seek = $("#seek");
+    const vol = $("#vol");
+    const playBtn = $("#play-btn");
+    const prevBtn = $("#prev-btn");
+    const nextBtn = $("#next-btn");
+    const ffBtn = $("#ff-btn");
+    const rwBtn = $("#rewind-btn");
+    const cur = $("#cur");
+    const dur = $("#dur");
+    const pTitle = $("#player-title");
+    const pCover = $("#player-cover");
+    const queueToggle = $("#queue-toggle");
+    const queueDrawer = $("#queue");
+    const queueClose = $("#queue-close");
+    const queueItems = $("#queue-items");
+    const shuffleBtn = $("#shuffle-btn");
+    const repeatBtn = $("#repeat-btn");
+    const clearQueueBtn = $("#clear-queue");
+
+    function openQueue(open=true){{ queueDrawer.style.transform = open ? "translateX(0)" : "translateX(100%)"; }}
+    queueToggle.onclick = ()=>openQueue(true);
+    queueClose.onclick = ()=>openQueue(false);
+
+    repeatBtn.onclick = ()=>{{ isRepeat = (isRepeat + 1) % 3; repeatBtn.textContent = "Repeat: " + (["Off","One","All"][isRepeat]); }};
+    shuffleBtn.onclick = ()=>{{ isShuffled = !isShuffled; shuffleBtn.classList.toggle("bg-white/20", isShuffled); if(isShuffled) shuffleQueue(); }};
+    clearQueueBtn.onclick = ()=>{{ queue = []; queueIndex = -1; renderQueue(); }};
+
+    vol.oninput = ()=> audio.volume = Number(vol.value);
+    seek.oninput = ()=> audio.currentTime = (Number(seek.value)/100) * (audio.duration||0);
+
+    playBtn.onclick = ()=> audio.paused ? audio.play() : audio.pause();
+    prevBtn.onclick = ()=> playFromQueue(queueIndex - 1);
+    nextBtn.onclick = ()=> playFromQueue(queueIndex + 1);
+    ffBtn.onclick = ()=> audio.currentTime = Math.min((audio.duration||0), audio.currentTime + 10);
+    rwBtn.onclick = ()=> audio.currentTime = Math.max(0, audio.currentTime - 10);
+
+    audio.addEventListener("timeupdate", ()=>{{ seek.value = audio.duration ? String((audio.currentTime / audio.duration) * 100) : "0"; cur.textContent = fmt(audio.currentTime); dur.textContent = fmt(audio.duration||0); }});
+    audio.addEventListener("ended", ()=>{{ if(isRepeat===1) return audio.play(); playFromQueue(queueIndex+1, true); }});
+    audio.addEventListener("play", ()=> playBtn.textContent = "⏸");
+    audio.addEventListener("pause", ()=> playBtn.textContent = "▶️");
+
+    function shuffleQueue(){{ for (let i = queue.length - 1; i > 0; i--) {{ const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }} }}
+
+    function setNowPlaying(track){{ pTitle.textContent = track.title || "—"; pCover.src = track.cover_url || DEFAULT_COVER; audio.src = track.audio_url; audio.play(); }}
+
+    function playFromQueue(idx){{ if(queue.length===0) return; if(idx >= queue.length){{ if(isRepeat===2) idx = 0; else return; }} if(idx < 0){{ if(isRepeat===2) idx = queue.length-1; else return; }} queueIndex = idx; setNowPlaying(queue[queueIndex]); renderQueue(); }}
+
+    function addToQueue(track, playNow=false){{ queue.push(track); renderQueue(); if(playNow) playFromQueue(queue.length-1); }}
+
+    function renderQueue(){{
+      queueItems.innerHTML = "";
+      queue.forEach((t,i)=>{{
+        const row = document.createElement("div");
+        row.className = "flex items-center gap-3 p-2 rounded hover:bg-white/5 cursor-pointer";
+        row.onclick = ()=> playFromQueue(i);
+        row.innerHTML = `<img src="${{t.cover_url||DEFAULT_COVER}}" class="w-10 h-10 rounded object-cover border border-white/10">
+                         <div class="min-w-0 flex-1">
+                           <div class="line-clamp-1 text-sm font-semibold">${{t.title}}</div>
+                           <div class="text-xs text-white/60">The Waverunners Collective</div>
+                         </div>
+                         <div class="text-xs text-white/60">${{fmt(t.duration)}}</div>`;
+        if(i===queueIndex) row.classList.add("bg-white/10");
+        queueItems.appendChild(row);
+      }});
+    }}
+
+    function renderPopular(){{
+      const container = document.getElementById("popular-list");
+      container.innerHTML = "";
+      const list = [...tracks].slice(0, 5);
+      list.forEach((t)=>{{
+        const row = document.createElement("div");
+        row.className = "flex items-center gap-3 p-2 rounded hover:bg-white/5 cursor-pointer";
+        row.onclick = ()=> addToQueue(t, true);
+        row.innerHTML = `<img src="${{t.cover_url||DEFAULT_COVER}}" class="w-10 h-10 rounded object-cover border border-white/10">
+                         <div class="min-w-0 flex-1">
+                           <div class="line-clamp-1 font-semibold">${{t.title}}</div>
+                           <div class="text-xs text-white/60">The Waverunners Collective</div>
+                         </div>
+                         <div class="text-xs text-white/60">${{fmt(t.duration)}}</div>`;
+        container.appendChild(row);
+      }});
+    }}
+
+    function renderAlbums(){{
+      const grid = document.getElementById("album-grid");
+      grid.innerHTML = "";
+      albums.forEach((a)=>{{
+        const card = document.createElement("div");
+        card.className = "hover-card bg-white/5 rounded-xl overflow-hidden border border-white/10 cursor-pointer";
+        card.onclick = ()=> playAlbum(a.id);
+        card.innerHTML = `<div class="aspect-square bg-black/20 overflow-hidden">
+                            <img src="${{a.cover_url||DEFAULT_COVER}}" class="w-full h-full object-cover">
+                          </div>
+                          <div class="p-2">
+                            <div class="line-clamp-1 font-semibold">${{a.title}}</div>
+                            <div class="text-xs text-white/60">${{a.year||""}}</div>
+                          </div>`;
+        grid.appendChild(card);
+      }});
+    }}
+
+    function playAlbum(album_id){{
+      const list = tracks.filter(t=>t.album_id===album_id).sort((a,b)=> (a.sort_index??0)-(b.sort_index??0));
+      if(!list.length) return;
+      queue = list.map(t=>t);
+      queueIndex = -1;
+      playFromQueue(0);
+    }}
+
+    async function loadData(){{
+      const {{ data: aData }} = await supabase.from("albums").select("*").order("year", {{ ascending:false }});
+      albums = aData || [];
+      const {{ data: tData }} = await supabase.from("tracks").select("*").order("album_id", {{ ascending:true }}).order("sort_index", {{ ascending:true }});
+      tracks = (tData||[]).map(t=>({{ ...t, cover_url: (albums.find(a=>a.id===t.album_id)||{{}}).cover_url }}));
+      renderAlbums();
+      renderPopular();
+    }}
+    loadData();
+  </script>
+</body>
+</html>
