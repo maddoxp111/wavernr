@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Public Player</title>
+  <style>
+    body { background: #121212; color: #fff; font-family: Arial, sans-serif; margin:0; padding:0; }
+    .countdown-banner { background: #1db954; color:#000; text-align:center; padding:10px; font-weight:bold; display:none; }
+    .album-grid { display:flex; flex-wrap:wrap; padding:20px; gap:20px; }
+    .album-card { background:#181818; padding:10px; width:180px; cursor:pointer; border-radius:8px; transition:transform .2s; }
+    .album-card:hover { transform:scale(1.05); background:#282828; }
+    .album-card img { width:100%; border-radius:8px; }
+    .album-title { margin-top:8px; font-size:14px; font-weight:bold; }
+    audio { width:100%; margin-top:20px; }
+  </style>
+</head>
+<body>
+  <div id="countdown" class="countdown-banner"></div>
+  <div class="album-grid" id="albumGrid"></div>
+  <audio id="player" controls></audio>
+
+<script>
+// Config
+const CONFIG = {
+  COUNTDOWN: {
+    enabled: true,
+    title: "VULTURES OUT IN",
+    targetISO: "2025-12-31T23:59:59-06:00"
+  },
+  albums: [
+    {title:"Test Album", cover:"https://www.dropbox.com/s/xxxxx/cover.jpg?dl=0", audio:"https://www.dropbox.com/s/xxxxx/test.mp3?dl=0"}
+  ]
+};
+
+// Normalize Dropbox links
+function normalizeDropbox(url){
+  return url.replace("www.dropbox.com", "dl.dropboxusercontent.com").replace("?dl=0","?raw=1");
+}
+
+// Countdown
+function startCountdown(){
+  if(!CONFIG.COUNTDOWN.enabled) return;
+  const el=document.getElementById('countdown');
+  el.style.display='block';
+  function update(){
+    const target=new Date(CONFIG.COUNTDOWN.targetISO);
+    const diff=target - new Date();
+    if(diff<=0){el.innerText=`${CONFIG.COUNTDOWN.title} NOW!`;return;}
+    const d=Math.floor(diff/86400000);
+    const h=Math.floor((diff%86400000)/3600000);
+    const m=Math.floor((diff%3600000)/60000);
+    const s=Math.floor((diff%60000)/1000);
+    el.innerText=`${CONFIG.COUNTDOWN.title} ${d} Days ${h} Hours ${m} Minutes ${s} Seconds`;
+  }
+  setInterval(update,1000);
+  update();
+}
+startCountdown();
+
+// Render albums
+const grid=document.getElementById('albumGrid');
+CONFIG.albums.forEach(album=>{
+  const card=document.createElement('div');
+  card.className="album-card";
+  const img=document.createElement('img');
+  img.src=normalizeDropbox(album.cover);
+  img.onerror=()=>img.style.display='none';
+  const title=document.createElement('div');
+  title.className="album-title";
+  title.innerText=album.title;
+  card.appendChild(img);
+  card.appendChild(title);
+  card.onclick=()=>{
+    const player=document.getElementById('player');
+    player.src=normalizeDropbox(album.audio);
+    player.play();
+  };
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
